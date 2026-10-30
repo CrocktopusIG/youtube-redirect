@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Opening YouTube...</title>
+    <script>
+        window.onload = function() {
+            // Update this to your NEW YouTube video or channel URL
+            var webUrl = "https://youtu.be/ZBJTndtdESA";
+            
+            var appUrl = webUrl.replace("https://youtube.com", "youtube://");
+            appUrl = appUrl.replace("https://youtu.be", "youtube://");
+
+            window.location.href = appUrl;
+
+            setTimeout(function() {
+                window.location.href = webUrl;
+            }, 1500);
+        };
+    </script>
+</head>
+<body>
+    <p>Redirecting you to the YouTube App...</p>
+</body>
+</html>
