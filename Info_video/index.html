@@ -2,24 +2,75 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Opening YouTube...</title>
-    <script>
-        window.onload = function() {
-            // Update this to your NEW YouTube video or channel URL
-            var webUrl = "https://youtu.be/ZBJTndtdESA";
-            
-            var appUrl = webUrl.replace("https://youtube.com", "youtube://");
-            appUrl = appUrl.replace("https://youtu.be", "youtube://");
-
-            window.location.href = appUrl;
-
-            setTimeout(function() {
-                window.location.href = webUrl;
-            }, 1500);
-        };
-    </script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            text-align: center;
+        }
+        .container { padding: 20px; }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border-left-color: #ff0000;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        a { color: #ff0000; text-decoration: none; font-weight: bold; }
+    </style>
 </head>
 <body>
-    <p>Redirecting you to the YouTube App...</p>
+    <div class="container">
+        <div class="spinner"></div>
+        <h2>Opening in YouTube app...</h2>
+        <p>If the app does not open automatically, <a id="fallback-link" href="#">click here</a>.</p>
+    </div>
+
+    <script>
+        (function() {
+            // 1. CHANGE THIS TO YOUR ACTUAL YOUTUBE LINK
+            var targetWebUrl = "https://youtu.be/ZBJTndtdESA";
+
+            // Clean up the URL format
+            var cleanUrl = targetWebUrl.replace("https://", "").replace("http://", "");
+            
+            // Build advanced deep links for Android and iOS systems
+            var iosAppUrl = "youtube://" + cleanUrl;
+            var androidIntent = "intent://" + cleanUrl + "#Intent;scheme=https;package=com.google.android.youtube;S.browser_fallback_url=" + encodeURIComponent(targetWebUrl) + ";end";
+
+            // Set the manual button link just in case
+            document.getElementById("fallback-link").href = targetWebUrl;
+
+            // Detect mobile platform
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            var isAndroid = /android/i.test(userAgent);
+            var isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+
+            if (isAndroid) {
+                // Android intents reliably break out of the Instagram browser app framework
+                window.location.href = androidIntent;
+            } else if (isIOS) {
+                // iOS app deep linking attempt
+                window.location.href = iosAppUrl;
+                setTimeout(function() {
+                    window.location.href = targetWebUrl;
+                }, 2000);
+            } else {
+                // Desktop or unknown devices go straight to standard web layout
+                window.location.href = targetWebUrl;
+            }
+        })();
+    </script>
 </body>
 </html>
